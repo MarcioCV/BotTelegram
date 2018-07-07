@@ -1,5 +1,27 @@
 {
   "dependencies": {
     "node-telegram-bot-api": "^0.30.0"
-  }
+  },
+  "name": "bot-telegram",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": { 
+    "node" : ">=6.0.0" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcioCV/BotTelegram.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarcioCV/BotTelegram/issues"
+  },
+  "homepage": "https://github.com/MarcioCV/BotTelegram#readme"
 }
