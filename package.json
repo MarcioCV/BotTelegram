@@ -1,6 +1,10 @@
 {
   "dependencies": {
-    "node-telegram-bot-api": "^0.30.0"
+    "bluebird": "^3.5.1",
+    "fs": "^0.0.1-security",
+    "mysql": "^2.15.0",
+    "telegraf": "^3.21.2",
+    "translate": "^1.0.2"
   },
   "name": "bot-telegram",
   "description": "",
@@ -8,11 +12,11 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "engines": { 
-    "node" : ">=6.0.0" 
+  "engines": {
+    "node": ">=6.0.0"
   },
   "repository": {
     "type": "git",

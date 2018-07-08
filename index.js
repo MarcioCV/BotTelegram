@@ -1,37 +1,15 @@
-const TelegramBot = require('node-telegram-bot-api');
+const Telegraf = require('telegraf');
+
+const db = require('./config/db/db');
+const fs = require('fs');
 
 const token = '584173010:AAHvFZdLD47MweStNfGfJboI_TMCDTNw_WU';
 
-const bot = new TelegramBot(token, {
-  polling: true
-});
+const telegram = new Telegraf(token);
 
-bot.onText(/\/echo (.+)/, (msg, match) => {
+// telegram.hears('hi', (ctx) => ctx.reply('Hey there'))
+// telegram.hears(/buy/i, (ctx) => ctx.reply('Buy-buy'))
 
-  const chatId = msg.chat.id;
-  const resp = match[1];
-  bot.sendMessage(chatId, resp);
+require('./core')(telegram, db);
 
-});
-
-bot.onText(/\/start/, (msg, match) => {
-
-  const chatId = msg.chat.id;
-  
-  bot.sendMessage(msg.chat.id, "Select language", {
-    "reply_markup": {
-      "keyboard": [
-        ["English(us)", "Portuguese(pt-BR)"]
-      ]
-    }
-  });
-
-});
-
-
-// bot.on('message', (msg) => {
-
-//   const chatId = msg.chat.id;
-//   bot.sendMessage(chatId, 'Received your message ' + chatId);
-
-// });
+telegram.startPolling();
