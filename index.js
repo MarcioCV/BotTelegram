@@ -10,7 +10,7 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 
   const chatId = msg.chat.id;
   const resp = match[1];
-  bot.sendMessage(chatId, resp);
+  bot.sendMessage(chatId, "Bem Vindo");
 
 });
 
@@ -27,6 +27,24 @@ bot.onText(/\/start/, (msg, match) => {
   });
 
 });
+
+bot.onText(/\/home/, (msg, match) => {
+
+  const chatId = msg.chat.id;
+  
+  bot.sendMessage(chatId, resp);
+
+});
+
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  
+  console.log(msg);
+
+  // send a message to the chat acknowledging receipt of their message
+  bot.sendMessage(chatId, msg.text);
+});
+
 
 
 // bot.on('message', (msg) => {
