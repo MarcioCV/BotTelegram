@@ -1,25 +1,16 @@
 var mysql = require('mysql');
 
-var con = mysql.createConnection({
+var pool = mysql.createPool({
+  connectionLimit: 10,
   host: "35.238.249.86",
   user: "root",
   password: "root",
   database: "usuarios"
 });
 
-module.exports = () => new Promise((Resolve, Reject) => {
-
-  con.connect(function(err) {
-
-    if (err) throw err;
-
-    Resolve((q) => new Promise((Resolve, Reject) => {
-      con.query(q, (err, result) => {
-        if(err) Reject(err);
-        Resolve(result);
-      });
-    }));
-
+module.exports = async (query) => new Promise((Resolve, Reject) => {
+  pool.query(query, function (error, results, fields) {
+    if (error) throw error;
+    Resolve(results);
   });
-
 });

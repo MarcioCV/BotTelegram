@@ -1,6 +1,6 @@
 module.exports = () => {
 
-  const langs = [
+  let langs = [
     "lang_pt",
     "lang_en",
     "lang_ru",
@@ -14,66 +14,64 @@ module.exports = () => {
 
   langs.map(lang => bot.action(lang, async (ctx) => {
     
-    const chat = ctx.update.callback_query.message.chat;
+    let chat = ctx.update.callback_query.message.chat;
     var json = [ ref ];
    
-    db().then(async (query) => {
-      
-      query(`SELECT * FROM users WHERE chat_id="${chat.id}"`).then(res => {
+    let ress = await db(`SELECT up_line FROM users WHERE chat_id="${chat.id}"`);
 
-        if(res.length === 0){
+    if(ress.length === 0){
 
-          query(`SELECT * FROM users WHERE id_users="${ref}"`).then(res => {
+        let res = await db(`SELECT chat_id FROM users WHERE id_users="${ref}"`);
 
-                res = Array.from(res);
-                res = res[0];
+        res = Array.from(res);
+        res = res.length === 1 ? res[0] : false;
 
-                if(res){
-                  let upline = JSON.parse(res['up_line']);
-                  console.log(upline);
-                  json = [ ...json, ...upline ];
-                }
-
-                json = JSON.stringify(json);
-                
-
-                let q = `
-                  INSERT INTO users(
-                    chat_id , 
-                    saldo_disponivel, 
-                    saldo_investido,
-                    total_ganhos_equipe,
-                    total_investido_equipe,
-                    up_line,
-                    data_deposito,
-                    idioma_selecionado,
-                    data_saque
-                  ) VALUES (
-                    "${chat.id}",
-                    "0",
-                    "0",
-                    "0",
-                    "0",
-                    '${ json }',
-                    null,
-                    "${ lang }",
-                    null
-                  )
-              `;
-            
-              query(q).then((msg) => {
-                if(msg) console.log('Inserido com sucesso!!');
-              });
-
-          });
-
+        if(res){
+          let upline = JSON.parse(res['up_line']);
+          json = [ ...json, ...upline ];
         }
 
-      }).catch(e => console.error(e));
+        json = JSON.stringify(json);
+                  
 
-    });
+        let q = `
+                    INSERT INTO users(
+                      chat_id , 
+                      saldo_disponivel, 
+                      saldo_investido,
+                      total_ganhos_equipe,
+                      total_investido_equipe,
+                      up_line,
+                      data_deposito,
+                      idioma_selecionado,
+                      data_saque
+                    ) VALUES (
+                      "${chat.id}",
+                      "0",
+                      "0",
+                      "0",
+                      "0",
+                      '${ json }',
+                      null,
+                      "${ lang }",
+                      null
+                    )
+      `;
+              
+      const insert = await db(q);
+      if(insert) console.log('Inserido com sucesso!!');
+
+    }
+
+    const menu = await require('../commands/menu')(ctx);
     
-    return ctx.editMessageText('Selected ' + lang);
+    return ctx.telegram.sendMessage(
+      ctx.from.id,
+      await traduzir(ctx, "Escolha sua opçao no menu"),
+      menu
+    );
+
+    // return ctx.editMessageText(await traduzir(ctx, 'Selected ' + lang));
 
   }));
 
