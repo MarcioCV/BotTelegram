@@ -23,11 +23,11 @@ module.exports = () => {
   bot.start((ctx) => {
 
     const { update } = ctx;
-
+    
     if(update.message){
       let r = update.message.text;
       let idRef = r.replace('/start ', '');
-      global.ref = idRef;
+      global.ref = crypt.decode(idRef);
     }
 
     return ctx.telegram.sendMessage(

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "bluebird": "^3.5.1",
+    "buffer": "^5.1.0",
     "concurrently": "^3.6.0",
     "fs": "^0.0.1-security",
     "mysql": "^2.15.0",
@@ -14,7 +15,7 @@
   "devDependencies": {},
   "scripts": {
     "start": "concurrently --kill-others \"npm run start:server\"",
-    "start:server": "node index.js",
+    "start:server": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
