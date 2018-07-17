@@ -1,69 +1,120 @@
 global.Extra = require('telegraf/extra');
 global.Markup = require('telegraf/markup');
-const translate = require('translate');
+global.shortid = require('shortid');
+const translate = require('google-translate-api');
+const formData = require('form-data');
 
 translate.key = "AIzaSyDK1QIX3QQgPkw6x4nGdBA87TCAxr42INU";
 
-global.ref = false;
+global.ref = null;
+global.usersActions = {};
+global.minWithdraw = "0.01";
 
 module.exports = (bot, db) => {
 
+  // Set Bot Telegram
   global.bot = bot;
+
+  // Set Database BOT
   global.db = db;
-  global.crypt = {
-    encode(str){
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
-      }
-      return (s4()+s4()+'#'+str+'#'+s4()+s4()).toUpperCase();
-    },
-    decode(str){
-      return parseInt(str.split('#')[1]);
-    }
+  
+  // Set Controller USER
+  global.userController = require('./src/controllers/user');
+  
+  // Set FormData to request
+  global.FormData = formData;
+  
+  // Set Api TroniPay
+  global.TroniPay = async (url, d) => {
+    const data = Object.keys(d).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(d[k])}`).join('&');
+    const request = await axios.post(url, data, {
+      'Content-type': 'application/x-www-form-urlencoded'
+    });
+    const json = request.data.Response[0];
+    return json;
   };
 
-  global.getUser = async (ctx) => {
+  global.clearActions = id => usersActions[id].action = '';
 
-    const update = ctx.update;
-    const id = update.hasOwnProperty('callback_query')
-        ? update.callback_query.message.chat.id
-        : update.message.chat.id;
+  global.daysBetween = function(first, second) {
+      var one = new Date(first.getFullYear(), first.getMonth(), first.getDate());
+      var two = new Date(second.getFullYear(), second.getMonth(), second.getDate());
+      var millisecondsPerDay = 1000 * 60 * 60 * 24;
+      var millisBetween = two.getTime() - one.getTime();
+      var days = millisBetween / millisecondsPerDay;
+      return Math.floor(days);
+  };
 
-    let user = await db(`SELECT * FROM users WHERE chat_id="${id}"`);
-    user = user[0];
-
+  global.setInvoice = async (ctx, id, dataInvoice) => {
+    let user = isUser(id);
     if(user){
-      const ref = (user.hasOwnProperty('id_users')) ? user.id_users : 1;
-      user['ref_link'] = "https://telegram.me/testebout_bot?start=" + crypt.encode(ref);
+      const update = db.get('users')
+        .find({
+          "chat_id": id
+        })
+        .assign({
+          "invoices": [...user.invoices, dataInvoice]
+        })
+        .write();
+      return update;
     }
-
-    return user;
-
+    return false;
   };
+
+  global.btcLevel = (btc, level) => {
+    switch(level){
+        case 0: 
+          return btcPercent(btc, "10");
+          break;
+        case 1:
+          return btcPercent(btc, "03");
+          break;
+        case 2:
+          return btcPercent(btc, "02");
+          break;
+        case 'default':
+          return false;
+    }
+  };
+
+  global.btcParse = (btc) => {
+    if (!btc) return "0.00000000";
+    var b = btc.toString();
+    b.replace(/(.*?)\.\d{8}/, (r) => b = r);
+    return b;
+  };
+
+  global.btcPercent = (btc, percent) => {
+    percent = "0." + percent;
+    var b = (Number(btc) * Number(percent));
+    return b.toFixed(8);
+  };
+
+  const translator = (text, context) => new Promise((res, rej) => {
+
+    translate(text, context)
+      .then(value => res(value.text))
+      .catch(err => rej(err));
+
+  });
 
   global.traduzir = async (ctx, text) => {
-    const user = await getUser(ctx);
-    let l = 'en';
-    if(user && user['idioma_selecionado'] !== "undefined"){
-      let idioma = user['idioma_selecionado'] || 'lang_en';
-      l = idioma.split('_');
-      l = l.length === 2 ? l[1] : "lang_en";
-    }
-    let context = { from: 'pt', to: l };
-    const t = await translate(text, context);
-    return t;
+    let id = ctx.from.id;
+    const user = db.get('users')
+    .find({ "chat_id": id })
+    .value();
+    if(!user) return;
+    let idioma = user.idioma_selecionado.split('_')[1];
+    let context = { from: 'pt', to: idioma };
+    return await translator(text, context);
   };
 
+  // Actions
+  require('./src/actions/menu')();
+  require('./src/actions/languages')();
+
+  // Commands
   require('./src/commands/start')();
   require('./src/commands/ref-link')();
-
-  // bot.hears('/test', async (ctx) => {
-
-  //   const text = await traduzir(ctx, 'Hello World my person');
-  //   return ctx.reply(text);
-
-  // });
 
 };

@@ -1,10 +1,17 @@
 {
   "dependencies": {
+    "axios": "^0.18.0",
     "bluebird": "^3.5.1",
     "buffer": "^5.1.0",
     "concurrently": "^3.6.0",
+    "form-data": "^2.3.2",
     "fs": "^0.0.1-security",
+    "google-translate-api": "^2.3.0",
+    "lowdb": "^1.0.0",
     "mysql": "^2.15.0",
+    "mysql2": "^1.5.3",
+    "net": "^1.0.2",
+    "shortid": "^2.2.11",
     "telegraf": "^3.21.2",
     "translate": "^1.0.2"
   },
@@ -15,7 +22,7 @@
   "devDependencies": {},
   "scripts": {
     "start": "concurrently --kill-others \"npm run start:server\"",
-    "start:server": "nodemon index.js",
+    "start:server": "supervisor index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {

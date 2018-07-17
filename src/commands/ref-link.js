@@ -1,9 +1,10 @@
 module.exports = () => {
 
-  bot.hears('/ref', async (ctx) => {
+  bot.hears('/ref', (ctx) => {
 
-    const user = await getUser(ctx);
-    return ctx.reply(user['ref_link']);
+   // const user = await getUser(ctx);
+    const user = new userController(ctx);
+    return ctx.reply(user.user['ref_link']);
 
   });
 
