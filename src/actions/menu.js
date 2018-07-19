@@ -9,12 +9,6 @@ module.exports = () => {
       let ctrl = new userController(ctx);
       let user = ctrl.user;
       let btc = v => btcParse(v);
-      let inv = btc(user['saldo_investido']);
-
-      inv = inv === 0 
-          ? "Ainda sem investimentos"
-          : inv;
-
       let list = {
         "|": "\n",
         "amp;": `
@@ -25,8 +19,27 @@ module.exports = () => {
       };
       
       let saldo_dis = ctrl.getSaldo(user);
+      let investiments = [ctrl.getInvestiment()];
+      let reinvestiments = [ctrl.getReinvestiment()];
 
-      let trans = (await traduzir(ctx, `Saldo:|table*${saldo_dis}* BTC|Saldo Investido|table*${btc(user['saldo_investido'])}* BTC|Saldo Total Da Rede|table*${btc(user['total_investido_equipe'])}* BTC|Total Ganho Comissoes|table*${btc(user['total_ganhos_equipe'])}* BTC|Investimentos|table*${inv}* BTC||Comece agora com seu investimento de apenas *0.005* BTC|
+      investiments.map(i => Object.assign(i, { type: 'Investimento' }));
+      reinvestiments.map(i => Object.assign(i, { type: 'Reinvestimento' }));
+
+      let allInvestiments = [ ...investiments, ...reinvestiments ];
+      
+      let all = allInvestiments
+      .filter(i => typeof(i) === "object")
+      .filter(i => daysBetween(new Date(i.data_payment), new Date()) <= 100)
+      .map(i => `
+        ${i.type} ID: *${i.invoice}*
+        ${i.type} Valor: *${Number(i.value).toFixed(8)} BTC* 
+        ${i.type} Data: *${(new Date(i.data_payment)).toLocaleString()}*
+        Dias Para Acabar: *${ 100 - parseInt(daysBetween(new Date(i.data_payment), new Date())) } dias*
+      `);
+
+      let inv = all.join(' ');
+
+      let trans = (await traduzir(ctx, `Saldo:|table*${saldo_dis}* BTC|Saldo Investido|table*${btc(user['saldo_investido'])}* BTC|Saldo Total Da Rede|table*${btc(user['total_investido_equipe'])}* BTC|Total Ganho Comissoes|table*${btc(user['total_ganhos_equipe'])}* BTC|Investimentos|table${inv} ||Comece agora com seu investimento de apenas *0.005* BTC|
 Base: *1.2%* por dia ( *0.35%* de 6 em 6 horas ) ||Adicione um deposito clicando no botão "Deposito". |
 Seu saldo cresce de acordo com o porcetagem base e seus referidos |
 `)).replace(/(&quot;|\||amp;|table)/gim, (r) => list[r]);
@@ -152,6 +165,22 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
       );
       clearActions(id);
     }
+
+    if(user.action === "reinvest"){
+
+      let reinvestir = ctx.match[0];
+      let userInfo = ctrl.user;
+      if(ctrl.getSaldo() >= 0.005){
+
+        let re = ctrl.reinvest(reinvestir);
+        return ctx.replyWithMarkdown(await traduzir(ctx, `O valor de *( ${reinvestir} )* foi reinvestido com sucesso.`));
+
+      }else{
+        return ctx.replyWithMarkdown(await traduzir(ctx, `Ocorreu um erro ao reinvestir o valor de *( ${reinvestir} )*.`));
+      }
+
+    }
+
   });
 
   // Init Withdraw
@@ -210,6 +239,24 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
     }
   });
 
+  // Historico 
+  bot.hears(/📚/i, (ctx) => {
+      const ctrl = new userController(ctx);
+      ctrl.user.invoices.map(async (invoice, key) => {
+          ctx.replyWithMarkdown(await traduzir(ctx, `
+            ID: *${key}*\nID Invoice: *${invoice.invoice}*\nValor: *${invoice.value}*\nData: *${(new Date(invoice.data)).toLocaleString()}*\nPagamento Status: *${invoice.payment}*
+          `));
+      });
+  });
+
+  // Reinvestir
+  
+  bot.hears(/♻️/i, async (ctx) => {
+      let id = ctx.update.message.chat.id;
+      if(!usersActions[id]) usersActions[id] = {action: ''};
+      usersActions[id].action = "reinvest";
+      return ctx.replyWithMarkdown(await traduzir(ctx, 'Só basta me enviar o valor agora *( min 0.005 )*'));
+  });
 
 
 };
