@@ -22,8 +22,8 @@ module.exports = () => {
       let investiments = [ctrl.getInvestiment()];
       let reinvestiments = [ctrl.getReinvestiment()];
 
-      investiments.map(i => Object.assign(i, { type: 'Investimento' }));
-      reinvestiments.map(i => Object.assign(i, { type: 'Reinvestimento' }));
+      investiments.filter(i => i !== null && i !== undefined).map(i => Object.assign(i, { type: 'Investimento' }));
+      reinvestiments.filter(i => i !== null && i !== undefined).map(i => Object.assign(i, { type: 'Reinvestimento' }));
 
       let allInvestiments = [ ...investiments, ...reinvestiments ];
       

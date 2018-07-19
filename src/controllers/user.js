@@ -75,7 +75,7 @@ module.exports = class User {
 		if(!u) return false;
 		let user = u;
 		const ref = (user.hasOwnProperty('id')) ? user.id : 1;
-	    user['ref_link'] = "https://telegram.me/testebout_bot?start=" + ref;
+	    user['ref_link'] = "https://t.me/tedtest_bot?start=" + ref;
 	    return user;
 	}
 
