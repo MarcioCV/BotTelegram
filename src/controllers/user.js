@@ -5,7 +5,7 @@ module.exports = class User {
 	constructor(ctx){
 		if(!ctx) throw "error send ctx";
 		// Set Context
-		this.ctx = ctx;
+		this.ctx = ctx; 
 		// Set Database
 		this.db = db.get('users');
 		// Set User
@@ -18,6 +18,33 @@ module.exports = class User {
 		// Return Scope
 		return this;
 	}
+
+	conta(){
+		return {
+			saldo: 0,
+			pendences: [],
+			addPend(pend){
+				this.pendences.push(pend);
+			},
+			increment(value){
+				this.saldo = Number(this.saldo) + Number(value);
+			},
+			decrement(value){
+		    	this.saldo = Number(this.saldo) - Number(value);
+			},
+			final(){
+				if(this.pendences.length > 0) this.pendences.map(p => this.saldo = this.saldo - Number(p));
+				return this.saldo.toFixed(8);
+		    }
+		};
+	}
+
+// conta.increment('0.1');
+// conta.decrement('0.05');
+// conta.final();
+// conta.addPend('0.03');
+// conta.addPend('0.01');
+// conta.final();
 	
 	// References Functions
 	
@@ -48,6 +75,7 @@ module.exports = class User {
 	upline(){
 	  if(ref){
 		  let json = [ ref ];
+		  let u = this.user;
 		  let reference = this.db.find({ id: ref }).value();
 		  if (reference) {
 		    let r = reference['up_line'];
@@ -81,11 +109,14 @@ module.exports = class User {
 
 	setUser(opts){
 		
+	   const pushRef = this.pushRef;
 	   const chat_id = this.getId();
-	   const upline = this.upline();
+	   const id = shortid();
+	   const upline = this.upline(id).filter(f => f !== "/start");
+	   upline.map(idr => pushRef(id, idr));
 
 	   const data = {
-          id: shortid(),
+          id: id,
           chat_id: chat_id,
           saldo_disponivel: "0.000000000",
           saldo_investido: "0.000000000",
@@ -94,6 +125,7 @@ module.exports = class User {
           up_line: upline,
           invoices: [],
           reinvest: [],
+          refs: [],
           data_deposito: null,
           idioma_selecionado: opts.lang,
           data_saque: 0
@@ -120,7 +152,8 @@ module.exports = class User {
 	        value: deposito,
 	        data: new Date().toString(),
 	        data_payment: new Date().toString(),
-	        payment: false
+	        payment: false,
+	        saques: []
 	    }]
 	  }).write();
 	  return update;
@@ -160,6 +193,10 @@ module.exports = class User {
 
     getInvoices(){
 	    return this.user.invoices;
+	}
+
+	getReinvests(){
+	    return this.user.reinvest;
 	}
 
 	getLastInvoice(){
@@ -222,57 +259,124 @@ module.exports = class User {
 	}
 
 	getSaldo(){
+
 		this.clearInvest();
+
 		let user = this.user;
-	    let saldo_dis = user['saldo_investido'];
+		const conta = this.conta();
+	    let investiment = this.getInvestiment();
 	    let reinvest = this.getReinvest();
+
+	    if(investiment === undefined) return "0.00000000";
+
+	    let saldo_dis = 0;
+	    conta.increment(saldo_dis); 
 
 	    let dias = data => daysBetween(new Date(data), new Date());
 
-	    saldo_dis = Number(saldo_dis) !== 0.00000000 
-	    		? (function(){
-	    			  let dd = Number(dias(user['data_deposito']));
-				      if(dd <= 100){
-				      	 return (btcPercent(user['saldo_investido'], '012'))
-				      }else{
-	    				 return 0.00000000;
-	    			}
-	    		})()
-	    		: 0.00000000;
+	    saldo_dis = Number(investiment.value) !== 0.00000000 
+	    		? (btcPercent(investiment.value, '012'))
+	    		: "0.00000000";
 
 	    let reinv_dis = Number(reinvest.value) !== 0.00000000 
 	    		? (btcPercent(reinvest.value, '012')) 
-	    		: 0.00000000;
+	    		: 0.00000000; 
 
-	    if(user['data_deposito'] !== null){
-	      let dd = Number(dias(user['data_deposito']));
+	    if(investiment.data_payment !== null){
+	      let dd = Number(dias(investiment.data_payment));
 	      if(dd <= 100){
-	      	saldo_dis = saldo_dis * Number(dd);
+	      	saldo_dis = Number(saldo_dis) * Number(dd);
+	      	saldo_dis = Number(saldo_dis) === 0 ? 0.00000000 : Number(saldo_dis);
+	      	conta.increment(saldo_dis);
+	      }else{
+	      	saldo_dis = Number(saldo_dis) * 100;
+	      	conta.increment(saldo_dis);
+	      }
+	      if(investiment.saques.length > 0){
+	      	investiment.saques.map(s => conta.addPend(s));
 	      }
 	    }
 
 	    if(Number(reinvest.value) !== 0.00000000){
 	    	let diasReinv = Number(dias(reinvest['data_payment']));
+	    	let calc = 0;
 	    	if(diasReinv <= 100){
-	    		let calc = ( reinv_dis * diasReinv );
-				saldo_dis = Number(saldo_dis) + Number(calc);
-				saldo_dis = Number(reinvest.value) - Number(saldo_dis);
+	    		calc = ( Number(reinv_dis) * Number(diasReinv) );
+	    	}else{
+				calc = ( reinv_dis * 100 ); 
 	    	}
+	    	// saldo_dis = Number(saldo_dis) + Number(calc);
+			conta.increment(calc);
+			if(reinvest.saques.length > 0){
+				reinvest.saques.map(s => conta.addPend(s));
+			}
+	    }
+
+	    if(Number(reinvest.value) <= saldo_dis){
+	    	//saldo_dis = saldo_dis - Number(reinvest.value);
+	    	conta.decrement(Number(reinvest.value));
 	    }
 	     
-	    saldo_dis = Number(saldo_dis) + Number(user['total_ganhos_equipe']);
-	    return saldo_dis.toFixed(8);
+	    // saldo_dis = Number(saldo_dis) + Number(user['total_ganhos_equipe']);
+		conta.increment(Number(user['total_ganhos_equipe']));
+
+	    return conta.final();
+
 	}
+
+	pushRef(id, ref){
+	  let f = db.get('users').find({ id: ref });
+	  let v = f.value();   
+	  f.assign({ refs: [...v.refs, id] }).write();
+	} 
 
 	updateSaldo(state){
 	  this.userModel.assign(state).write();
 	}
 
-	clearSaldo(){
+	verifyActive(){
+		let investiment = this.getInvestiment();
+	    let reinvest = this.getReinvest();
+	    let dias = dia => daysBetween(new Date(dia), new Date());
+	    let verifyInv = dias(investiment.data_payment);
+	    let reinvestInv = dias(reinvest.data_payment);
+	    if(verifyInv <= 100){
+	    	return "investiment";
+	    }else{
+	    	if(reinvestInv <= 100){
+	    		return "reinvestiment";
+	    	}else{
+	    		return false;
+	    	}
+	    }
+	}
+
+	clearSaldo(value = 0.00000000){
 		let user = this.user;
 	    user['saldo_investido'] = "0.00000000";
 	    user['data_deposito'] = null;
 	    user['data_saque'] = new Date().toString();
+
+	    let type = this.verifyActive(); 
+		
+		if(type === "investiment"){
+
+			let invs = this.getInvoices();
+			const iid = invs.length - 1;
+			invs[iid].saques.push(value);
+			this.updateInvoice({ 
+		       "invoices": invs
+		    });
+
+		}else{
+			let invs = this.getReinvests();
+			const iid = invs.length - 1;
+			invs[iid].saques.push(value);
+			this.updateInvoice({ 
+		       "reinvest": invs
+		    });
+		}
+
 	    let write = this.db
 	      .find({ id: user.id })
 	      .assign(user)

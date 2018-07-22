@@ -11,7 +11,7 @@ global.usersActions = {};
 global.minWithdraw = "0.01";
 
 module.exports = (bot, db) => {
-
+ 
   // Set Bot Telegram
   global.bot = bot;
 
@@ -91,7 +91,7 @@ module.exports = (bot, db) => {
   };
 
   const translator = (text, context) => new Promise((res, rej) => {
-
+    
     translate(text, context)
       .then(value => res(value.text))
       .catch(err => rej(err));
@@ -101,11 +101,12 @@ module.exports = (bot, db) => {
   global.traduzir = async (ctx, text) => {
     let id = ctx.from.id;
     const user = db.get('users')
-    .find({ "chat_id": id })
+    .find({ "chat_id": id })  
     .value();
     if(!user) return;
     let idioma = user.idioma_selecionado.split('_')[1];
     let context = { from: 'pt', to: idioma };
+    if(idioma === "pt") return text;
     return await translator(text, context);
   };
 

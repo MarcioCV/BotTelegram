@@ -18,7 +18,8 @@ module.exports = () => {
         "table": "  "
       };
       
-      let saldo_dis = ctrl.getSaldo(user);
+      let saldoFinal = ctrl.getSaldo(user);
+      console.log(saldoFinal);
       let investiments = [ctrl.getInvestiment()];
       let reinvestiments = [ctrl.getReinvestiment()];
 
@@ -37,9 +38,8 @@ module.exports = () => {
         Dias Para Acabar: *${ 100 - parseInt(daysBetween(new Date(i.data_payment), new Date())) } dias*
       `);
 
-      let inv = all.join(' ');
-
-      let trans = (await traduzir(ctx, `Saldo:|table*${saldo_dis}* BTC|Saldo Investido|table*${btc(user['saldo_investido'])}* BTC|Saldo Total Da Rede|table*${btc(user['total_investido_equipe'])}* BTC|Total Ganho Comissoes|table*${btc(user['total_ganhos_equipe'])}* BTC|Investimentos|table${inv} ||Comece agora com seu investimento de apenas *0.005* BTC|
+      let inv = all.join(' '); 
+      let trans = (await traduzir(ctx, `Saldo:|table*${saldoFinal}* BTC|Saldo Investido|table*${btc(user['saldo_investido'])}* BTC|Saldo Total Da Rede|table*${btc(user['total_investido_equipe'])}* BTC|Total Ganho Comissoes|table*${btc(user['total_ganhos_equipe'])}* BTC|Investimentos|table${inv} ||Comece agora com seu investimento de apenas *0.005* BTC|
 Base: *1.2%* por dia ( *0.35%* de 6 em 6 horas ) ||Adicione um deposito clicando no botão "Deposito". |
 Seu saldo cresce de acordo com o porcetagem base e seus referidos |
 `)).replace(/(&quot;|\||amp;|table)/gim, (r) => list[r]);
@@ -146,7 +146,8 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
         value: deposito,
         data: new Date().toString(),
         data_payment: 0,
-        payment: false
+        payment: false,
+        saques: []
       });
 
       let msg1 = await ctx.reply(await traduzir(ctx, `
@@ -179,7 +180,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
         return ctx.replyWithMarkdown(await traduzir(ctx, `Ocorreu um erro ao reinvestir o valor de *( ${reinvestir} )*.`));
       }
 
-    }
+    }  
 
   });
 
@@ -198,7 +199,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
   const walletPat = /(?:^(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34})$)/;
   bot.hears(walletPat, async (ctx) => {
     let wallet = ctx.message.text;
-    let ctrl = new userController(ctx);
+    let ctrl = new userController(ctx);  
     const id = ctrl.user.chat_id;
     const user = usersActions[id] ? usersActions[id] : {action:''};
     if(user.action === "withdraw"){
@@ -207,20 +208,23 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
       let user = ctrl.user;
       const valorTotal = ctrl.getSaldo();
 
-      const days = daysBetween(
-        new Date(user['data_deposito']),
-        new Date()
-      );
-
       // if(!(minWithdraw > valorTotal)){
-      if(days >= 100){
-
-        ctx.replyWithMarkdown(await traduzir(ctx, `
+      if(Number(valorTotal) >= 0.01){
+        
+        const request = await TroniPay('https://tronipay.com/api/json/Payment', {
+            invoice: Math.floor(Math.random() * 100000),
+            amount: valorTotal,
+            merchant_id: 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
+            currency: '3',
+            wallet: wallet
+        });
+        // request.status
+        if(1 == 1){
+            ctx.replyWithMarkdown(await traduzir(ctx, `
           Saque de *${valorTotal} BTC* foi relizado!!\nFoi enviado para a carteira: ${wallet}
         `));
-        
-        ctrl.sendPayment(valorTotal, wallet);
-        ctrl.clearSaldo();
+            ctrl.clearSaldo(valorTotal);
+        }
 
         const menu = await require('../commands/menu')(ctx);
 
@@ -258,5 +262,17 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
       return ctx.replyWithMarkdown(await traduzir(ctx, 'Só basta me enviar o valor agora *( min 0.005 )*'));
   });
 
+  // Equipe
+  
+  bot.hears(/👧👦/i, async (ctx) => {
+    let ctrl = new userController(ctx);
+    let user = ctrl.user;
+    await ctx.reply(await traduzir(ctx, `
+          Sistema de Referidos:\n🥇 Nivel 10%\n🥈 Nivel 3%\n🥉 Nivel 2%\n\nSeu link de referência para compartilhar com seus amigos:\n${user.ref_link}
+    `));
+    await ctx.replyWithMarkdown(await traduzir(ctx, `
+       Suas estatísticas de referência\nTotal de Referidos: *${user.refs.length}*\nReferidos Activos: *${user.refs.length}*\nInvestimentos de Referidos: *${user.total_investido_equipe} BTC*\nO seu Ganho: *${user.total_ganhos_equipe} BTC*
+    `));
+  });
 
 };

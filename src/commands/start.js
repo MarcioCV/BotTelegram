@@ -30,8 +30,8 @@ module.exports = () => {
 
     if (update.message) {
       let r = update.message.text;
-      let idRef = r.replace('/start ', '');
-      global.ref = idRef;
+      let idRef = r.replace(/\/start/gim, '');
+      global.ref = idRef.trim();  
     }
 
     // const u = await getUser(ctx);
@@ -52,6 +52,6 @@ module.exports = () => {
       );
     }
 
-  });
+  });  
 
 };
