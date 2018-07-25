@@ -63,7 +63,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
       let id = ctx.update.message.chat.id;
       if(!usersActions[id]) usersActions[id] = {action: ''};
       usersActions[id].action = "deposit";
-      return ctx.replyWithMarkdown(await traduzir(ctx, 'Só basta me enviar o valor agora *( min 0.005 )*'));
+      return ctx.replyWithMarkdown(await traduzir(ctx, 'Se você não digitar o valor correto no exemplo abaixo , sua carteira para este deposito não será gerada\n\nDigite no campo de mensagem abaixo o valor que deseja depositar\n\n*No minimo 0.005 * \n\n*Ex: (0.005)* '));
   });
 
   // Verify Payment
@@ -129,6 +129,10 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
     if(user.action === "deposit"){
 
       let deposito = ctx.match[0];
+      
+      if(Number(deposito) < 0.005){
+        return await ctx.replyWithMarkdown(await traduzir(ctx,"Valor abaixo do minimo *Minimo: 0.005*"));
+      }
       let g = () => Math.random() * 100000;
       let id_inv = Math.floor(g() + g() + g()+ g());
 
@@ -150,7 +154,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
       });
 
       let msg1 = await ctx.reply(await traduzir(ctx, `
-      Este é o seu endereço BTC pessoal para o seu depósito, por razões de segurança, cada endereço é apenas para um depósito. Depois de adicionar o primeiro depósito aguarde a confirmação no seu Bot para gerar outro endereço para outro depósito:
+      *Este é o seu endereço BTC para este deposito exclusivamente*  , por razões de segurança, cada endereço é apenas para um depósito. Depois de adicionar o primeiro depósito aguarde a confirmação no seu Bot para gerar outro endereço para outro depósito , nunca use o mesmo endereço para dois depositos diferentes *ou TODOS os valores enviados depois da primeiro deposito serão perdidos*:
     `));
       let msg2 = await ctx.replyWithMarkdown(await traduzir(ctx, `
       Valor: *${data.amount} BTC*\nCarteira: *${data.wallet}*

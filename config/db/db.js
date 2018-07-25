@@ -18,29 +18,5 @@ module.exports = async (query) => new Promise((res, rej) => {
     if (error) throw error;
     res(results);
   });
-  // get the client
-//   pool.getConnection(function(err, conn) {
-//     //if(err) throw err;
-//     //console.log(conn);
-//     //conn.query();
-//     pool.releaseConnection(conn);
-//  })
-  // query database
-  //const [rows, fields] = await connection.execute('SELECT * FROM `table` WHERE `name` = ? AND `age` > ?', ['Morty', 14]);
-  // pool.getConnection(function(err, conn) {
-  //   if (err) {
-  //       console.log(err);
-  //   }
-  //   console.log("Conectado ao db!")
-  //   // if (err) throw err; // not connected!
-  //   // // Use the connection
-  //   // connection.query('SELECT something FROM sometable', function (error, results, fields) {
-  //   //   res(results);
-  //   //   connection.release();
-  //   //   if (error) throw error;
-  //   // });
-  // });
-
 });
 
-// connection.release();

@@ -24,11 +24,12 @@ module.exports = () => {
 
     const menu = await require('../commands/menu')(ctx);
 
-    return ctx.telegram.sendMessage(
+    await ctx.telegram.sendMessage(
       ctx.from.id,
-      await traduzir(ctx, "Escolha sua opçao no menu"),
+      await traduzir(ctx, "Bem Vindo"),
       menu
     );
+    await ctx.reply("TED - Trader Experts Dynamics");
 
   }));
 

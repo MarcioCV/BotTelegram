@@ -22,7 +22,7 @@ module.exports = () => {
     ]
   ]).extra();
 
-  bot.start(async (ctx) => {
+  bot.start(async (ctx) => {   
 
     const {
       update
@@ -47,7 +47,7 @@ module.exports = () => {
       const menu = await require('./menu')(ctx);
       ctx.telegram.sendMessage(
         ctx.from.id,
-        'Init Menu',
+        'TED - Trader Experts Dynamics',
         menu
       );
     }

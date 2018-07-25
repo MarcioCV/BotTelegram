@@ -25,7 +25,7 @@ module.exports = (bot, db) => {
   global.FormData = formData;
   
   // Set Api TroniPay
-  global.TroniPay = async (url, d) => {
+  global.TroniPay = async (url, d) => { 
     const data = Object.keys(d).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(d[k])}`).join('&');
     const request = await axios.post(url, data, {
       'Content-type': 'application/x-www-form-urlencoded'

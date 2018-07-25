@@ -48,7 +48,7 @@ module.exports = class User {
 	
 	// References Functions
 	
-	refInsert(refs, value){
+	refInsert(refs, value){ 
 		const model = this.db;
 	    const per = v => v === 0 
 	        ? btcPercent(value, "10")
@@ -93,7 +93,7 @@ module.exports = class User {
 		return this.db.find({ chat_id }).value();
 	}
 
-	getId(){
+	getId(){ 
 		return this.ctx.from.id;
 	}
 
@@ -103,7 +103,7 @@ module.exports = class User {
 		if(!u) return false;
 		let user = u;
 		const ref = (user.hasOwnProperty('id')) ? user.id : 1;
-	    user['ref_link'] = "https://t.me/tedtest_bot?start=" + ref;
+	    user['ref_link'] = "https://t.me/tedbtc_bot?start=" + ref;
 	    return user;
 	}
 
