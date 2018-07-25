@@ -85,9 +85,8 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
-
     // verify.status
-    if("1" == "1"){
+    if(verify.status == 1){
     
       invoices.payment = true;
       invoices.data_payment = new Date().toString();
@@ -188,11 +187,18 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
   bot.hears(/📤/i, async (ctx) => {
     let id = ctx.update.message.chat.id;
     if(!usersActions[id]) usersActions[id] = {action:''};
-    usersActions[id].action = 'withdraw';
     let ctrl = new userController(ctx);
     const user = ctrl.user;
     const valor = ctrl.getSaldo();
-    return ctx.replyWithMarkdown(await traduzir(ctx, `Você está prestes a fazer o saque de *( ${valor} )* BTC\nDigite sua carteira Bitcoin abaixo.`));
+    if(valor == "0.00000000"){
+        usersActions[id].action = 'withdraw';
+        return ctx.replyWithMarkdown(await traduzir(ctx, `
+          Você não possui saldo o suficiente para saque.\nO minimo para saque é de *0.01 BTC*
+        `));
+    }else{
+        usersActions[id].action = 'withdraw';
+        return ctx.replyWithMarkdown(await traduzir(ctx, `Você está prestes a fazer o saque de *( ${valor} )* BTC\nDigite sua carteira Bitcoin abaixo.`));
+    }
   });
 
   // Set wallet withdraw btc
@@ -208,7 +214,6 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
       let user = ctrl.user;
       const valorTotal = ctrl.getSaldo();
 
-      // if(!(minWithdraw > valorTotal)){
       if(Number(valorTotal) >= 0.01){
         
         const request = await TroniPay('https://tronipay.com/api/json/Payment', {
@@ -218,8 +223,9 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
             currency: '3',
             wallet: wallet
         });
+
         // request.status
-        if(1 == 1){
+        if(verify.status == 1){
             ctx.replyWithMarkdown(await traduzir(ctx, `
           Saque de *${valorTotal} BTC* foi relizado!!\nFoi enviado para a carteira: ${wallet}
         `));
@@ -244,8 +250,13 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
   });
 
   // Historico 
-  bot.hears(/📚/i, (ctx) => {
+  bot.hears(/📚/i, async (ctx) => {
       const ctrl = new userController(ctx);
+      if(ctrl.user.invoices.length === 0){
+        ctx.replyWithMarkdown(await traduzir(ctx, `
+            *Você nao possui historico.*
+        `));
+      }
       ctrl.user.invoices.map(async (invoice, key) => {
           ctx.replyWithMarkdown(await traduzir(ctx, `
             ID: *${key}*\nID Invoice: *${invoice.invoice}*\nValor: *${invoice.value}*\nData: *${(new Date(invoice.data)).toLocaleString()}*\nPagamento Status: *${invoice.payment}*
@@ -267,11 +278,57 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
   bot.hears(/👧👦/i, async (ctx) => {
     let ctrl = new userController(ctx);
     let user = ctrl.user;
+    let ativos = [];
+    let model = db.get('users');
+    // "saldo_investido"
     await ctx.reply(await traduzir(ctx, `
           Sistema de Referidos:\n🥇 Nivel 10%\n🥈 Nivel 3%\n🥉 Nivel 2%\n\nSeu link de referência para compartilhar com seus amigos:\n${user.ref_link}
     `));
     await ctx.replyWithMarkdown(await traduzir(ctx, `
        Suas estatísticas de referência\nTotal de Referidos: *${user.refs.length}*\nReferidos Activos: *${user.refs.length}*\nInvestimentos de Referidos: *${user.total_investido_equipe} BTC*\nO seu Ganho: *${user.total_ganhos_equipe} BTC*
+    `));
+  });
+
+  bot.hears(/ℹ️/i, async (ctx) => {
+     await ctx.replyWithMarkdown(await traduzir(ctx, `
+       Sobre Nós? 
+                        
+ O nosso lançamento oficial foi em 06.07.17.
+Esforçamos para oferecer um projeto que possa confiar e usar para alcançar a SUA liberdade financeira.
+Com nossa vasta experiência nas áreas em que trabalhamos, ajudamos empresários a investir com sabedoria , ganhando receitas de mais de 20 fontes diferentes de renda apenas investindo em um só lugar.
+
+
+Você pode ver onde seu dinheiro está indo e de onde é proveniente diariamente através de nossos relatórios, você pode encontrar nossos relatórios no nosso site em: http://iCenter.co                
+        
+                        O que Oferecemos?
+                        
+                        - 1.2% do seu investimento diário por 99 dias
+                        - Ganhando a cada 6 horas
+                        - Min. Investimento 0.005 BTC
+                        - Min. Reinvesto 0.1 BTC
+                        - Min. Saque 0.1 BTC
+                        - Bonus de Referência em 3 Niveis:
+                           .Nivel 1 - 10%
+                           .Nivel 2 - 3%
+                           .Nivel 3 - 2% 
+                        - Sempre uma super promoção
+                        - Consistência e Estabilidade
+                        - Suporte ao vivo pelo Website iCenter.co
+                        - Relatórios diários sobre o projeto
+                        - Projeto com Plano de 5 anos
+                        
+                        E muitos outros recursos em breve!
+                        
+                        :cop: IMPORTANTE :cop:
+Não temos nenhum suporte direto trabalhando via Telegram, qualquer pessoa que reivindique ser nosso suporte ou programadores é um "scammer", por favor denuncie a abuse@telegram.org. Se você precisar de ajuda, nosso único suporte direto é através do nosso site:
+http://iCenter.co
+                        
+                        Leia também este artigo importante para focar o melhor informado possível:
+A iCenter é um Ponzi?
+https://icenter.co/icenter-ponzi-important-kiss-method/
+
+Obrigado
+Equipe iCenter.co
     `));
   });
 

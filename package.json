@@ -3,6 +3,7 @@
     "axios": "^0.18.0",
     "bluebird": "^3.5.1",
     "buffer": "^5.1.0",
+    "coinpayments": "^1.1.7",
     "concurrently": "^3.6.0",
     "form-data": "^2.3.2",
     "fs": "^0.0.1-security",

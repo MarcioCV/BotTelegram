@@ -201,8 +201,12 @@ module.exports = class User {
 
 	getLastInvoice(){
 		let invoice = this.getInvoices();
-		if(invoice.length > 0){
-			return invoice[( invoice.length - 1 )];
+		if(Array.isArray(invoice)){
+			if(invoice.length > 0){
+				return invoice[( invoice.length - 1 )];
+			}else{
+				return false;
+			}
 		}else{
 			return false;
 		}
@@ -210,8 +214,12 @@ module.exports = class User {
 
 	getLastReinvest(){
 		let invoice = this.user.reinvest;
-		if(invoice.length > 0){
-			return invoice[( invoice.length - 1 )];
+		if(Array.isArray(invoice)){
+			if(invoice.length > 0){
+				return invoice[( invoice.length - 1 )];
+			}else{
+				return false;
+			}
 		}else{
 			return false;
 		}
@@ -219,11 +227,15 @@ module.exports = class User {
 
 	getReinvest(){
 		let user = this.user;
-		if(user['reinvest'].length > 0){
-			let rein = user['reinvest'][(user['reinvest'].length - 1)];
-			return rein;
+		if(Array.isArray(user['reinvest'])){
+			if(user['reinvest'].length > 0){
+				let rein = user['reinvest'][(user['reinvest'].length - 1)];
+				return rein;
+			}else{
+				return { value: 0.00000000 };
+			}
 		}else{
-			return { value: 0.00000000 };
+			return false;
 		}
 	}
 
@@ -357,7 +369,7 @@ module.exports = class User {
 	    user['data_deposito'] = null;
 	    user['data_saque'] = new Date().toString();
 
-	    let type = this.verifyActive(); 
+	    let type = this.verifyActive();
 		
 		if(type === "investiment"){
 
@@ -369,12 +381,14 @@ module.exports = class User {
 		    });
 
 		}else{
-			let invs = this.getReinvests();
-			const iid = invs.length - 1;
-			invs[iid].saques.push(value);
-			this.updateInvoice({ 
-		       "reinvest": invs
-		    });
+			if(type != false){
+				let invs = this.getReinvests();
+				const iid = invs.length - 1;
+				invs[iid].saques.push(value);
+				this.updateInvoice({ 
+			       "reinvest": invs
+			    });
+			}
 		}
 
 	    let write = this.db
