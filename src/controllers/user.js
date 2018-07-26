@@ -146,16 +146,19 @@ module.exports = class User {
 	// Reinvest Functions
 	reinvest(deposito){
 	  let user = this.user;
+	  let dataReinvest = {
+	       invoice: shortid(),
+	       value: deposito,
+	       data: new Date().toString(),
+	       data_payment: new Date().toString(),
+	       payment: false,
+	       saques: [],
+	       type: "Reinvest"
+	  };
       const update = this.userModel.assign({
-	   "reinvest": [...user.reinvest, {
-	        invoice: shortid(),
-	        value: deposito,
-	        data: new Date().toString(),
-	        data_payment: new Date().toString(),
-	        payment: false,
-	        saques: []
-	    }]
+	   "reinvest": [...user.reinvest, dataReinvest]
 	  }).write();
+	  db.get('invoices').push(dataReinvest).write();
 	  return update;
 	}
 
@@ -182,6 +185,7 @@ module.exports = class User {
 	      const update = this.userModel.assign({
 	        "invoices": [...user.invoices, dataInvoice]
 	      }).write();
+	      db.get('invoices').push(dataInvoice).write();
 	      return update;
 	    }
 	    return false;

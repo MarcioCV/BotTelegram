@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "JSONStream": "^1.3.3",
     "axios": "^0.18.0",
     "bluebird": "^3.5.1",
     "buffer": "^5.1.0",
@@ -22,8 +23,9 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "start": "concurrently --kill-others \"npm run start:server\"",
+    "start": "concurrently --kill-others \"npm run start:server\" \"npm run start:bot-help\"",
     "start:server": "supervisor index.js",
+    "start:bot-help": "supervisor suporte.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
