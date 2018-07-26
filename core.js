@@ -10,7 +10,7 @@ global.ref = null;
 global.usersActions = {};
 global.minWithdraw = "0.01";
 
-module.exports = (bot, db) => {
+module.exports = (bot, db) => { 
  
   // Set Bot Telegram
   global.bot = bot;

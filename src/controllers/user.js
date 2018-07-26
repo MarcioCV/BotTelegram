@@ -261,7 +261,7 @@ module.exports = class User {
 		let user = this.user;
 		if(user['saldo_investido']){
 			let dia = Number(dias(user['data_deposito']));
-			if(dia > 100){
+			if(dia > 80){
 				this.userModel.assign({
 					"saldo_investido": "0.00000000",
 					"data_deposito": null
@@ -287,42 +287,48 @@ module.exports = class User {
 	    let dias = data => daysBetween(new Date(data), new Date());
 
 	    saldo_dis = Number(investiment.value) !== 0.00000000 
-	    		? (btcPercent(investiment.value, '012'))
+	    		? (btcPercent(investiment.value, '015'))
 	    		: "0.00000000";
 
 	    let reinv_dis = Number(reinvest.value) !== 0.00000000 
-	    		? (btcPercent(reinvest.value, '012')) 
+	    		? (btcPercent(reinvest.value, '015')) 
 	    		: 0.00000000; 
 
-	    if(investiment.data_payment !== null){
+	    if(investiment.data_payment !== null  && investiment.payment == true){
 	      let dd = Number(dias(investiment.data_payment));
-	      if(dd <= 100){
+	      if(dd <= 80){
 	      	saldo_dis = Number(saldo_dis) * Number(dd);
 	      	saldo_dis = Number(saldo_dis) === 0 ? 0.00000000 : Number(saldo_dis);
 	      	conta.increment(saldo_dis);
 	      }else{
-	      	saldo_dis = Number(saldo_dis) * 100;
+	      	saldo_dis = Number(saldo_dis) * 80;
 	      	conta.increment(saldo_dis);
 	      }
 	      if(investiment.saques.length > 0){
 	      	investiment.saques.map(s => conta.addPend(s));
 	      }
-	    }
+		}
+		else{
+			conta.increment("0.00000000");
+		}
 
-	    if(Number(reinvest.value) !== 0.00000000){
+	    if(Number(reinvest.value) !== 0.00000000 && reinvest.payment == true){
 	    	let diasReinv = Number(dias(reinvest['data_payment']));
 	    	let calc = 0;
-	    	if(diasReinv <= 100){
+	    	if(diasReinv <= 80){
 	    		calc = ( Number(reinv_dis) * Number(diasReinv) );
 	    	}else{
-				calc = ( reinv_dis * 100 ); 
+				calc = ( reinv_dis * 80 ); 
 	    	}
 	    	// saldo_dis = Number(saldo_dis) + Number(calc);
 			conta.increment(calc);
 			if(reinvest.saques.length > 0){
 				reinvest.saques.map(s => conta.addPend(s));
 			}
-	    }
+		}
+		else{
+			conta.increment("0.00000000");
+		}
 
 	    if(Number(reinvest.value) <= saldo_dis){
 	    	//saldo_dis = saldo_dis - Number(reinvest.value);
@@ -352,10 +358,10 @@ module.exports = class User {
 	    let dias = dia => daysBetween(new Date(dia), new Date());
 	    let verifyInv = dias(investiment.data_payment);
 	    let reinvestInv = dias(reinvest.data_payment);
-	    if(verifyInv <= 100){
+	    if(verifyInv <= 80){
 	    	return "investiment";
 	    }else{
-	    	if(reinvestInv <= 100){
+	    	if(reinvestInv <= 80){
 	    		return "reinvestiment";
 	    	}else{
 	    		return false;

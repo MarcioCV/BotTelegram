@@ -51,7 +51,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
     ctx.telegram.sendMessage(
       ctx.from.id,
       ".",
-      menu
+      menu 
     );
     
 
@@ -142,7 +142,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
         'amount': deposito,
         'currency': '3'
       };
-      const data = await TroniPay('https://www.tronipay.com/api/json/Create', d);
+      const data = await TroniPay('https://www.tronipay.com/api/json/Create', d); 
 
       const inv_set = ctrl.setInvoice({
         invoice: data.invoice,
@@ -153,16 +153,16 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
         saques: []
       });
 
-      let msg1 = await ctx.reply(await traduzir(ctx, `
-      *Este é o seu endereço BTC para este deposito exclusivamente*  , por razões de segurança, cada endereço é apenas para um depósito. Depois de adicionar o primeiro depósito aguarde a confirmação no seu Bot para gerar outro endereço para outro depósito , nunca use o mesmo endereço para dois depositos diferentes *ou TODOS os valores enviados depois da primeiro deposito serão perdidos*:
+      let msg1 = await ctx.replyWithMarkdown(await traduzir(ctx, `
+      *Este é o seu endereço BTC exclusivamente para este deposito*  , por razões de segurança, cada endereço é apenas para um depósito.\nNunca use o mesmo endereço para dois ou mais depositos *ou TODOS os valores enviados depois do primeiro deposito serão perdidos*:
     `));
       let msg2 = await ctx.replyWithMarkdown(await traduzir(ctx, `
       Valor: *${data.amount} BTC*\nCarteira: *${data.wallet}*
     `));
-      let msg3 = await ctx.replyWithMarkdown(await traduzir(ctx, `Você pode depositar a qualquer momento tanto quanto você quiser ( *minimo 0.005 BTC* ). Por Favor, envie apenas Bitcoins para esta carteira, qualquer outra moeda ( como Litecoins ) será perdida para sempre!`));
+      let msg3 = await ctx.replyWithMarkdown(await traduzir(ctx, `Você pode realizar novos depositos a qualquer momento . Atenção , envie apenas Bitcoins para esta carteira, qualquer outra moeda ( como Litecoins ) será perdida para sempre!`));
       let pay = await ctx.telegram.sendMessage(
         ctx.from.id, 
-        await traduzir(ctx, 'Clique no botão para atualizar o status de pagamento'), 
+        await traduzir(ctx, 'Após as devidas confirmações da rede clique no botão abaixo para creditar o valor depositado em seu saldo'), 
         Extra.markup(Markup.inlineKeyboard([
           Markup.callbackButton(await traduzir(ctx, `Verificar Pagamento`), 'verify_payment')
         ]))
@@ -180,7 +180,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
         return ctx.replyWithMarkdown(await traduzir(ctx, `O valor de *( ${reinvestir} )* foi reinvestido com sucesso.`));
 
       }else{
-        return ctx.replyWithMarkdown(await traduzir(ctx, `Ocorreu um erro ao reinvestir o valor de *( ${reinvestir} )*.`));
+        return ctx.replyWithMarkdown(await traduzir(ctx, `Você não possui o saldo minimo necessário para reinvetimento , *minimo 0.005*`));
       }
 
     }  
@@ -194,6 +194,17 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
     let ctrl = new userController(ctx);
     const user = ctrl.user;
     const valor = ctrl.getSaldo();
+
+    var semana = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+    var d = new Date();
+    var n = d.getDay();
+    var diaSemana = semana[n];
+
+    if(diaSemana == 'domingo' || diaSemana == 'sabado' || diaSemana == 'sexta'){
+	    ctx.reply(await traduzir(ctx, 'De fim de semana nao pode sacar'));
+	    return;
+    }
+
     if(valor == "0.00000000"){
         usersActions[id].action = 'withdraw';
         return ctx.replyWithMarkdown(await traduzir(ctx, `
@@ -216,7 +227,8 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
 
       let ctrl = new userController(ctx);
       let user = ctrl.user;
-      const valorTotal = ctrl.getSaldo();
+      let valorTotal = ctrl.getSaldo();
+      valorTotal = Number(valorTotal) - Number(btcPercent(valorTotal , "10"));
 
       if(Number(valorTotal) >= 0.01){
         
@@ -274,7 +286,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
       let id = ctx.update.message.chat.id;
       if(!usersActions[id]) usersActions[id] = {action: ''};
       usersActions[id].action = "reinvest";
-      return ctx.replyWithMarkdown(await traduzir(ctx, 'Só basta me enviar o valor agora *( min 0.005 )*'));
+      return ctx.replyWithMarkdown(await traduzir(ctx, 'Digite no campo de mensagens como no exemplo o valor que deseja reinvestir, minimo de (0.01) exemplo:  *0.01*'));
   });
 
   // Equipe
