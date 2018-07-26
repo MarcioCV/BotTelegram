@@ -1,8 +1,6 @@
 const Telegraf = require('telegraf')
 const bot = new Telegraf('637009093:AAHpoh_nkq7TJVXs3O2p2D-mm2UE2px23RE');
 const fs = require('fs');
-const db = require('./config/db/low');
-var map = new WeakMap();
 var fsTimeout;
 
 const streamInit = (ctx) => {	
