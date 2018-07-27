@@ -11,6 +11,8 @@ const telegram = new Telegraf(token);
 // 	return;
 // });
 
+
+
 require('./core')(telegram, db);
 
 telegram.catch((err) => {

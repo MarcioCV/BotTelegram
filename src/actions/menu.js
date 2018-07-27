@@ -9,15 +9,7 @@ module.exports = () => {
       let ctrl = new userController(ctx);
       let user = ctrl.user;
       let btc = v => btcParse(v);
-      let list = {
-        "|": "\n",
-        "amp;": `
-        
-        `,
-        "&quot;": '"',
-        "table": "  "
-      };
-      
+
       let saldoFinal = ctrl.getSaldo(user);
       console.log(saldoFinal);
       let investiments = [ctrl.getInvestiment()];
