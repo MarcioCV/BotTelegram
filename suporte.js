@@ -11,7 +11,7 @@ const streamInit = (ctx) => {
 			    	data = JSON.parse(data);
 			        let invoices = data.invoices;
 			        invoices = invoices[(invoices.length - 1)];
-			        if(invoices){
+			        if(invoices && invoices.payment == true){
 			        	ctx.replyWithMarkdown(`
 							hey someone just invest *${invoices.value} BTC*
 			        	`);
