@@ -39,10 +39,11 @@ module.exports = () => {
       `);
 
       let inv = all.join(' '); 
-      let trans = (await traduzir(ctx, `Saldo:|table*${saldoFinal}* BTC|Saldo Investido|table*${btc(user['saldo_investido'])}* BTC|Saldo Total Da Rede|table*${btc(user['total_investido_equipe'])}* BTC|Total Ganho Comissoes|table*${btc(user['total_ganhos_equipe'])}* BTC|Investimentos|table${inv} ||Comece agora com seu investimento de apenas *0.005* BTC|
+      let trans = await traduzir(ctx, `Saldo:|table*${saldoFinal}* BTC|Saldo Investido|table*${btc(user['saldo_investido'])}* BTC|Saldo Total Da Rede|table*${btc(user['total_investido_equipe'])}* BTC|Total Ganho Comissoes|table*${btc(user['total_ganhos_equipe'])}* BTC|Investimentos|table${inv} ||Comece agora com seu investimento de apenas *0.005* BTC|
 Base: *1.2%* por dia ( *0.35%* de 6 em 6 horas ) ||Adicione um deposito clicando no botão "Deposito". |
 Seu saldo cresce de acordo com o porcetagem base e seus referidos |
-`)).replace(/(&quot;|\||amp;|table)/gim, (r) => list[r]);
+`);
+    trans = trans.replace(/(&quot;|\||amp;|table)/gim, (r) => list[r]);
     
     ctx.replyWithMarkdown(trans);
 
