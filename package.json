@@ -15,7 +15,8 @@
     "net": "^1.0.2",
     "shortid": "^2.2.11",
     "telegraf": "^3.21.2",
-    "translate": "^1.0.2"
+    "translate": "^1.0.2",
+    "supervisor": "*"
   },
   "name": "bot-telegram",
   "description": "",
@@ -23,7 +24,8 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "start": "concurrently --kill-others \"npm run start:server\" \"npm run start:bot-help\"",
+    "start": "concurrently --kill-others \"node index\" \"node suporte\"",
+    "dev": "concurrently --kill-others \"npm run start:server\" \"npm run start:bot-help\"",
     "start:server": "supervisor index.js",
     "start:bot-help": "supervisor suporte.js",
     "test": "echo \"Error: no test specified\" && exit 1"
