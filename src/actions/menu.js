@@ -9,15 +9,7 @@ module.exports = () => {
       let ctrl = new userController(ctx);
       let user = ctrl.user;
       let btc = v => btcParse(v);
-      let list = {
-        "|": "\n",
-        "amp;": `
-        
-        `,
-        "&quot;": '"',
-        "table": "  "
-      };
-      
+
       let saldoFinal = ctrl.getSaldo(user);
       console.log(saldoFinal);
       let investiments = [ctrl.getInvestiment()];
@@ -39,11 +31,11 @@ module.exports = () => {
       `);
 
       let inv = all.join(' '); 
-      let trans = (await traduzir(ctx, `Saldo:|table*${saldoFinal}* BTC|Saldo Investido|table*${btc(user['saldo_investido'])}* BTC|Saldo Total Da Rede|table*${btc(user['total_investido_equipe'])}* BTC|Total Ganho Comissoes|table*${btc(user['total_ganhos_equipe'])}* BTC|Investimentos|table${inv} ||Comece agora com seu investimento de apenas *0.005* BTC|
-Base: *1.2%* por dia ( *0.35%* de 6 em 6 horas ) ||Adicione um deposito clicando no botão "Deposito". |
-Seu saldo cresce de acordo com o porcetagem base e seus referidos |
-`)).replace(/(&quot;|\||amp;|table)/gim, (r) => list[r]);
-    
+      let trans = await traduzir(ctx, `Saldo:\n  *${saldoFinal}* BTC\nSaldo Investido\n  *${btc(user['saldo_investido'])}* BTC\nSaldo Total Da Rede\n  *${btc(user['total_investido_equipe'])}* BTC\nTotal Ganho Comissoes\n  *${btc(user['total_ganhos_equipe'])}* BTC\nInvestimentos\n  ${inv} \nComece agora com seu investimento de apenas *0.005* BTC\n
+Base: *1.2%* por dia ( *0.35%* de 6 em 6 horas )\nAdicione um deposito clicando no botão *Deposito*.\n
+Seu saldo cresce de acordo com o porcetagem base e seus referidos
+`);
+
     ctx.replyWithMarkdown(trans);
 
     const menu = await require('../commands/menu')(ctx);
