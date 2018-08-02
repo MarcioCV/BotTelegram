@@ -13,7 +13,7 @@ const streamInit = (ctx) => {
 			        invoices = invoices[(invoices.length - 1)];
 			        if(invoices && invoices.payment == true){
 			        	ctx.replyWithMarkdown(`
-							hey someone just invest *${invoices.value} BTC*
+							Hey someone just invest *${invoices.value} BTC*
 			        	`);
 			        }
 			    } else {
