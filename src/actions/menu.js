@@ -77,6 +77,31 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
+      let id = ctx.update.message.chat.id;
+      if(!usersActions[id]) usersActions[id] = {action: ''};
+      usersActions[id].action = "deposit";
+      return ctx.replyWithMarkdown(await traduzir(ctx, 'Se você não digitar o valor correto no exemplo abaixo , sua carteira para este deposito não será gerada\n\nDigite no campo de mensagem abaixo o valor que deseja depositar\n\n*No minimo 0.005 * \n\n*Ex: (0.005)* '));
+  });
+
+  // Verify Payment
+
+  bot.action('verify_payment', async (ctx) => {
+    let id = ctx.update.callback_query.from.id;
+    
+    let ctrl = new userController(ctx);
+    let user = ctrl.user;
+    let userInvoices = ctrl.getInvoices();
+
+    if(userInvoices.length === 0) return;
+
+    const iid = userInvoices.length - 1;
+    const invoices = userInvoices[iid];
+
+    const verify = await TroniPay(
+      "https://www.tronipay.com/api/json/Status", {
+          'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
+          'invoice': invoices.invoice
+    });
     // verify.status
     if(verify.status == 1){
     
@@ -301,42 +326,34 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
      await ctx.replyWithMarkdown(await traduzir(ctx, `
        Sobre Nós? 
                         
- O nosso lançamento oficial foi em 06.07.17.
+ O nosso lançamento oficial foi em 10.08.18.
 Esforçamos para oferecer um projeto que possa confiar e usar para alcançar a SUA liberdade financeira.
-Com nossa vasta experiência nas áreas em que trabalhamos, ajudamos empresários a investir com sabedoria , ganhando receitas de mais de 20 fontes diferentes de renda apenas investindo em um só lugar.
+Com nossa vasta experiência em trade          todos os mercados , ajudamos empresários a investir com sabedoria.      
 
-
-Você pode ver onde seu dinheiro está indo e de onde é proveniente diariamente através de nossos relatórios, você pode encontrar nossos relatórios no nosso site em: http://iCenter.co                
+Nossos traders tem mais de 10 anos de experiencia no mercado de investimentos e trade , aonde com nossa experiencia conseguimos fornecer 1.5% ao dia para nossos clientes
         
                         O que Oferecemos?
                         
-                        - 1.2% do seu investimento diário por 99 dias
-                        - Ganhando a cada 6 horas
+                        - 1.5% do seu investimento diário por 80 dias
+                        - Ganhando a cada 24 horas
                         - Min. Investimento 0.005 BTC
-                        - Min. Reinvesto 0.1 BTC
-                        - Min. Saque 0.1 BTC
+                        - Min. Reinvesto 0.01 BTC
+                        - Min. Saque 0.01 BTC
+                        - Saque diario
                         - Bonus de Referência em 3 Niveis:
                            .Nivel 1 - 10%
                            .Nivel 2 - 3%
                            .Nivel 3 - 2% 
-                        - Sempre uma super promoção
                         - Consistência e Estabilidade
-                        - Suporte ao vivo pelo Website iCenter.co
-                        - Relatórios diários sobre o projeto
-                        - Projeto com Plano de 5 anos
+                        - Suporte ao vivo pelo grupo de suporte @Ted_help
                         
                         E muitos outros recursos em breve!
                         
                         :cop: IMPORTANTE :cop:
-Não temos nenhum suporte direto trabalhando via Telegram, qualquer pessoa que reivindique ser nosso suporte ou programadores é um "scammer", por favor denuncie a abuse@telegram.org. Se você precisar de ajuda, nosso único suporte direto é através do nosso site:
-http://iCenter.co
-                        
-                        Leia também este artigo importante para focar o melhor informado possível:
-A iCenter é um Ponzi?
-https://icenter.co/icenter-ponzi-important-kiss-method/
+Nosso unico suporte é pelo grupo @Ted_help qualquer pessoa que te chamar em particular para te dar suporte tome cuidado pois o suporte oficial é no grupo @Ted_help
 
 Obrigado
-Equipe iCenter.co
+Equipe Ted
     `));
   });
 
