@@ -24,8 +24,8 @@
   "devDependencies": {},
   "scripts": {
     "start": "concurrently --kill-others \"npm run start:server\" \"npm run start:bot-help\"",
-    "start:server": "supervisor index.js",
-    "start:bot-help": "supervisor suporte.js",
+    "start:server": "node index.js",
+    "start:bot-help": "node suporte.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {

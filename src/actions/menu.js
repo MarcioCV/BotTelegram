@@ -85,7 +85,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos |
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
-      let id = ctx.update.message.chat.id;
+      // let id = ctx.update.message.chat.id;
       if(!usersActions[id]) usersActions[id] = {action: ''};
       usersActions[id].action = "deposit";
       return ctx.replyWithMarkdown(await traduzir(ctx, 'Se você não digitar o valor correto no exemplo abaixo , sua carteira para este deposito não será gerada\n\nDigite no campo de mensagem abaixo o valor que deseja depositar\n\n*No minimo 0.005 * \n\n*Ex: (0.005)* '));
