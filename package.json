@@ -24,7 +24,7 @@
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
-    "start": "concurrently --kill-others \"node index\" \"node suporte\"",
+    "start": "node index",
     "dev": "concurrently --kill-others \"npm run start:server\" \"npm run start:bot-help\"",
     "start:server": "supervisor index.js",
     "start:bot-help": "supervisor suporte.js",
