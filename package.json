@@ -10,6 +10,7 @@
     "fs": "^0.0.1-security",
     "google-translate-api": "^2.3.0",
     "lowdb": "^1.0.0",
+    "micro-bot": "^2.2.4",
     "mysql": "^2.15.0",
     "mysql2": "^1.5.3",
     "net": "^1.0.2",

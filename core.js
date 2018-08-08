@@ -5,6 +5,10 @@ const translate = require('google-translate-api');
 const formData = require('form-data');
 
 translate.key = "AIzaSyDK1QIX3QQgPkw6x4nGdBA87TCAxr42INU";
+
+const novo = (msg) => {
+  console.log(msg);
+};
         
 global.ref = null;
 global.usersActions = {};

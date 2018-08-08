@@ -77,7 +77,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
-      let id = ctx.update.message.chat.id;
+      id = ctx.update.message.chat.id;
       if(!usersActions[id]) usersActions[id] = {action: ''};
       usersActions[id].action = "deposit";
       return ctx.replyWithMarkdown(await traduzir(ctx, 'Se você não digitar o valor correto no exemplo abaixo , sua carteira para este deposito não será gerada\n\nDigite no campo de mensagem abaixo o valor que deseja depositar\n\n*No minimo 0.005 * \n\n*Ex: (0.005)* '));
@@ -323,38 +323,34 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
   });
 
   bot.hears(/ℹ️/i, async (ctx) => {
-     await ctx.replyWithMarkdown(await traduzir(ctx, `
-       Sobre Nós? 
-                        
- O nosso lançamento oficial foi em 10.08.18.
-Esforçamos para oferecer um projeto que possa confiar e usar para alcançar a SUA liberdade financeira.
-Com nossa vasta experiência em trade          todos os mercados , ajudamos empresários a investir com sabedoria.      
 
-Nossos traders tem mais de 10 anos de experiencia no mercado de investimentos e trade , aonde com nossa experiencia conseguimos fornecer 1.5% ao dia para nossos clientes
-        
-                        O que Oferecemos?
-                        
-                        - 1.5% do seu investimento diário por 80 dias
-                        - Ganhando a cada 24 horas
-                        - Min. Investimento 0.005 BTC
-                        - Min. Reinvesto 0.01 BTC
-                        - Min. Saque 0.01 BTC
-                        - Saque diario
-                        - Bonus de Referência em 3 Niveis:
-                           .Nivel 1 - 10%
-                           .Nivel 2 - 3%
-                           .Nivel 3 - 2% 
-                        - Consistência e Estabilidade
-                        - Suporte ao vivo pelo grupo de suporte @Ted_help
-                        
-                        E muitos outros recursos em breve!
-                        
-                        :cop: IMPORTANTE :cop:
-Nosso unico suporte é pelo grupo @Ted_help qualquer pessoa que te chamar em particular para te dar suporte tome cuidado pois o suporte oficial é no grupo @Ted_help
-
-Obrigado
-Equipe Ted
-    `));
+      await ctx.reply(await traduzir(ctx, `
+      O nosso lançamento oficial foi em 10.08.18.
+      Esforçamos para oferecer um projeto que possa confiar e usar para alcançar a SUA liberdade financeira.
+      Com nossa vasta experiência em trade todos os mercados, ajudamos empresários a investir com sabedoria.      
+      Nossos traders tem mais de 10 anos de experiencia no mercado de investimentos e trade , aonde com nossa experiencia conseguimos fornecer 1.5% ao dia para nossos clientes
+              
+                             O que Oferecemos?
+                              
+                              - 1.5% do seu investimento diário por 80 dias
+                              - Ganhando a cada 24 horas
+                              - Min. Investimento 0.005 BTC
+                              - Min. Reinvesto 0.01 BTC
+                              - Min. Saque 0.01 BTC
+                              - Saque diario
+                              - Bonus de Referência em 3 Niveis:
+                                 .Nivel 1 - 10%
+                                 .Nivel 2 - 3%
+                                 .Nivel 3 - 2% 
+                              - Consistência e Estabilidade
+                              - Suporte ao vivo pelo grupo de suporte @Ted_help
+                              
+                              E muitos outros recursos em breve!
+                              
+                              :cop: IMPORTANTE :cop:
+      Nosso unico suporte é pelo grupo @Ted_help qualquer pessoa que te chamar em particular para te dar suporte tome cuidado pois o suporte oficial é no grupo @Ted_help
+      Obrigado, Equipe Ted
+     `));
   });
 
 };
