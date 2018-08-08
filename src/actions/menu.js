@@ -27,12 +27,12 @@ module.exports = () => {
         ${i.type} ID: *${i.invoice}*
         ${i.type} Valor: *${Number(i.value).toFixed(8)} BTC* 
         ${i.type} Data: *${(new Date(i.data_payment)).toLocaleString()}*
-        Dias Para Acabar: *${ 100 - parseInt(daysBetween(new Date(i.data_payment), new Date())) } dias*
+        Dias Para Acabar: *${  - parseInt(daysBetween(new Date(i.data_payment), new Date())) } dias*
       `);
 
       let inv = all.join(' '); 
       let trans = await traduzir(ctx, `Saldo:\n  *${saldoFinal}* BTC\nSaldo Investido\n  *${btc(user['saldo_investido'])}* BTC\nSaldo Total Da Rede\n  *${btc(user['total_investido_equipe'])}* BTC\nTotal Ganho Comissoes\n  *${btc(user['total_ganhos_equipe'])}* BTC\nInvestimentos\n  ${inv} \nComece agora com seu investimento de apenas *0.005* BTC\n
-Base: *1.2%* por dia ( *0.35%* de 6 em 6 horas )\nAdicione um deposito clicando no botão *Deposito*.\n
+Base: *1.5%* por dia \nAdicione um deposito clicando no botão *Deposito*.\n
 Seu saldo cresce de acordo com o porcetagem base e seus referidos
 `);
 
@@ -77,6 +77,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
+<<<<<<< HEAD
       id = ctx.update.message.chat.id;
       if(!usersActions[id]) usersActions[id] = {action: ''};
       usersActions[id].action = "deposit";
@@ -102,6 +103,8 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
+=======
+>>>>>>> 0f2bbe33ca219a031cf94a50cd284d776eae783f
     // verify.status
     if(verify.status == 1){
     

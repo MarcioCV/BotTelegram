@@ -3,3 +3,6 @@ db.json
 npm-debug.log
 .DS_Store
 /*.env
+.idea
+package-lock.json 
+yarn.lock
