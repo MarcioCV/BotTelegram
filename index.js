@@ -2,7 +2,9 @@ const Telegraf = require('telegraf');
 const db = require('./config/db/low');
 const fs = require('fs');
 
-const token = '631598571:AAETNnSnN0KH2l6IXd-7c8J3qWpmFOMRCVo';
+// trocar o token
+const token = '623626839:AAFV_w484y2OoGNP6fCsuOMgNtshlTAgFcM';
+
 const telegram = new Telegraf(token, {
 	webhookReply: false
 });

@@ -77,7 +77,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
-<<<<<<< HEAD
+
       id = ctx.update.message.chat.id;
       if(!usersActions[id]) usersActions[id] = {action: ''};
       usersActions[id].action = "deposit";
@@ -103,8 +103,7 @@ Seu saldo cresce de acordo com o porcetagem base e seus referidos
           'merchant_id': 'ZVpfqaPhTxbyAKXEjikRF9lS0OdsDY',
           'invoice': invoices.invoice
     });
-=======
->>>>>>> 0f2bbe33ca219a031cf94a50cd284d776eae783f
+
     // verify.status
     if(verify.status == 1){
     
